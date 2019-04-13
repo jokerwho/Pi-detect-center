@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>远程监控中心-画面</title>
+
+<link type="text/css" rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+<div class="page">
+  <div class="page__demo">
+    <div class="main-container page__container">
+      <article class="card">
+        <header class="card__header">
+          <img class="card__preview" src="images/bg.jpg"> <!--{{ url_for('video_feed') }}-->
+        </header>
+        <div class="card__body">
+          <div class="card__content">
+			<center><span style="color:#009900;"><strong>实时监控画面</strong></span></center>
+          </div>
+          <footer class="card__footer">
+            <a href="/" class="card__link card__readmore">温湿度数据</a>
+            <div class="card__meta">
+			  时间：{{ time }}
+            </div>
+          </footer>
+        </div>
+      </article>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
