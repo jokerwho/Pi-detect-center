@@ -70,8 +70,8 @@ def detect():
             GPIO.output(R,GPIO.HIGH)
             u = "检测到火焰！"
             if rooms is not None:
-            username = rooms[0]['UserName']
-            itchat.send(str(u),toUserName=username)
+                username = rooms[0]['UserName']
+                itchat.send(str(u),toUserName=username)
         if GPIO.input(FIRE) == GPIO.LOW:
             GPIO.output(R,GPIO.LOW)
             GPIO.output(G,GPIO.HIGH)
