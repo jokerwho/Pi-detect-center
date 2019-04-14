@@ -2,9 +2,10 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>远程监控中心-温湿度</title>
+<meta http-equiv="refresh" content="1">
+<title>远程监控中心</title>
 
-<link type="text/css" rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href='../static/style.css'>
 
 </head>
 
@@ -15,7 +16,7 @@
     <div class="main-container page__container">
       <article class="card">
         <header class="card__header">
-          <img class="card__preview" src="images/bg.jpg">
+          <img class="card__preview" src="../static/bg.jpg">
           <h3 class="card__title">温湿度数据</h3>
         </header>
         <div class="card__body">
@@ -26,6 +27,9 @@
 			</p>
 			<p>
 				<span style="color:#337FE5;">湿度</span>：{{ hum }} %
+			</p>
+			<p>
+				<span style="color:#009688;">烟雾及火焰状态</span>：{{ u }} 
 			</p>
 			<p>
 				<a href = "/" >刷新</a>

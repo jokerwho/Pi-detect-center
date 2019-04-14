@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>远程监控中心-画面</title>
 
-<link type="text/css" rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href='../static/style.css'>
 
 </head>
 
@@ -15,7 +15,7 @@
     <div class="main-container page__container">
       <article class="card">
         <header class="card__header">
-          <img class="card__preview" src="images/bg.jpg"> <!--{{ url_for('video_feed') }}-->
+          <img class="card__preview" src="{{ url_for('video_feed') }}"> <!--{{ url_for('video_feed') }}-->
         </header>
         <div class="card__body">
           <div class="card__content">
