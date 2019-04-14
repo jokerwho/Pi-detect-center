@@ -40,45 +40,57 @@ def detect():
     GPIO.setup(R,GPIO.OUT)
     GPIO.setup(G,GPIO.OUT)
     GPIO.setup(Y,GPIO.OUT)
-    if GPIO.input(SMOKE) == GPIO.LOW:
+    if GPIO.input(SMOKE) == GPIO.LOW and GPIO.input(FIRE) == GPIO.LOW:
         GPIO.output(G,GPIO.LOW)
         GPIO.output(Y,GPIO.HIGH)
+        GPIO.output(R,GPIO.LOW)
         u = "检测到有害气体！"
-        if rooms is not None:
-            username = rooms[0]['UserName']
-            itchat.send(str(u),toUserName=username)
-        if GPIO.input(FIRE) == GPIO.HIGH:
-            GPIO.output(R,GPIO.HIGH)
-            u = "检测到有害气体和火焰！"
-            if rooms is not None:
-                username = rooms[0]['UserName']
-                itchat.send(str(u),toUserName=username)
-        if GPIO.input(FIRE) == GPIO.LOW:
-            GPIO.output(R,GPIO.LOW)
-            
-    if GPIO.input(SMOKE) == GPIO.HIGH:
+        m = 1
+    if GPIO.input(SMOKE) == GPIO.HIGH and GPIO.input(FIRE) == GPIO.HIGH:
         GPIO.output(Y,GPIO.LOW)
-        if GPIO.input(FIRE) == GPIO.HIGH:
-            GPIO.output(G,GPIO.LOW)
-            GPIO.output(R,GPIO.HIGH)
-            u = "检测到火焰！"
-            if rooms is not None:
-                username = rooms[0]['UserName']
-                itchat.send(str(u),toUserName=username)
-        if GPIO.input(FIRE) == GPIO.LOW:
-            GPIO.output(R,GPIO.LOW)
-            GPIO.output(G,GPIO.HIGH)
-            u = "无异常~"
-    return u
+        GPIO.output(G,GPIO.LOW)
+        GPIO.output(R,GPIO.HIGH)
+        u = "检测到火焰！"
+        m = 2
+    if GPIO.input(SMOKE) == GPIO.LOW and GPIO.input(FIRE) == GPIO.HIGH:
+        GPIO.output(G,GPIO.LOW)
+        GPIO.output(Y,GPIO.HIGH)
+        GPIO.output(R,GPIO.HIGH)
+        u = "检测到有害气体和火焰！"
+        m = 3
+    if GPIO.input(SMOKE) == GPIO.HIGH and GPIO.input(FIRE) == GPIO.LOW:
+        GPIO.output(Y,GPIO.LOW)
+        GPIO.output(R,GPIO.LOW)
+        GPIO.output(G,GPIO.HIGH)
+        u = "无异常~"
+        m = 4
+    return u,m
 
 if __name__ == '__main__':
     itchat.run()
     try:
         while (True):
-            detect()
-            u = detect()
-            print(str(u))
-            time.sleep(0.1)
+            while (True):
+                detect()
+                u,m = detect()
+                #print(str(u))
+                if m == 1:
+                    if rooms is not None:
+                        username = rooms[0]['UserName']
+                        itchat.send(str(u),toUserName=username)
+                break
+                if m == 2:
+                    if rooms is not None:
+                        username = rooms[0]['UserName']
+                        itchat.send(str(u),toUserName=username)    
+                break
+                if m == 3:
+                    if rooms is not None:
+                        username = rooms[0]['UserName']
+                        itchat.send(str(u),toUserName=username)
+                break
+                time.sleep(0.1)
+            time.sleep(600)
     except KeyboardInterrupt:
         pass
         GPIO.cleanup()
