@@ -68,29 +68,33 @@ def detect():
 
 if __name__ == '__main__':
     itchat.run()
+    c = 4
     try:
         while (True):
-            while (True):
-                detect()
-                u,m = detect()
-                #print(str(u))
+            #detect()
+            time.sleep(0.1)
+            u,m = detect()
+            if m != c:
                 if m == 1:
                     if rooms is not None:
                         username = rooms[0]['UserName']
                         itchat.send(str(u),toUserName=username)
-                break
+                        c = 1
+                        continue
                 if m == 2:
                     if rooms is not None:
                         username = rooms[0]['UserName']
-                        itchat.send(str(u),toUserName=username)    
-                break
+                        itchat.send(str(u),toUserName=username)
+                        c = 2
+                        continue
                 if m == 3:
                     if rooms is not None:
                         username = rooms[0]['UserName']
                         itchat.send(str(u),toUserName=username)
-                break
-                time.sleep(0.1)
-            time.sleep(600)
+                        c = 3
+                        continue
+            else:
+                continue
     except KeyboardInterrupt:
         pass
         GPIO.cleanup()
