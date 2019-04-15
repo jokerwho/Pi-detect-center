@@ -1,3 +1,4 @@
+# encoding: utf-8
 from flask import Flask, render_template, Response
 app = Flask(__name__)
 
@@ -6,12 +7,7 @@ from camera_pi import Camera
 import Adafruit_DHT
 import time
 import RPi.GPIO as GPIO
-import itchat
 
-"""set itchat to login in wechat"""
-itchat.auto_login(hotReload=True)
-rooms = itchat.get_chatrooms(update=True)
-rooms = itchat.search_chatrooms(name='itchat_test')
 """set GPIO"""
 GPIO.setmode(GPIO.BCM)
 R,G,Y = 26,19,13
@@ -28,15 +24,6 @@ def getDHTdata():
         hum = round(hum)
         temp = round(temp, 1)
     return temp, hum
-
-"""listen for users to send msg and return dht"""
-@itchat.msg_register(itchat.content.TEXT,isGroupChat=True)
-def reply_msg(msg):
-    if msg['Content'] == u'温湿度':
-        if rooms is not None:
-            username = rooms[0]['UserName']
-            temp, hum = getDHTdata()
-            itchat.send_msg("温度：" + temp + "℃" + '\n' + "湿度：" + hum + "%",toUserName=username)
         
 """get gas and fire,send warning to wechat"""
 def detect():
@@ -51,15 +38,9 @@ def detect():
         GPIO.output(G,GPIO.LOW)
         GPIO.output(Y,GPIO.HIGH)
         u = "检测到有害气体！"
-        if rooms is not None:
-            username = rooms[0]['UserName']
-            itchat.send(str(u),toUserName=username)
         if GPIO.input(FIRE) == GPIO.HIGH:
             GPIO.output(R,GPIO.HIGH)
             u = "检测到有害气体和火焰！"
-            if rooms is not None:
-                username = rooms[0]['UserName']
-                itchat.send(str(u),toUserName=username)
         if GPIO.input(FIRE) == GPIO.LOW:
             GPIO.output(R,GPIO.LOW)
             
@@ -69,9 +50,6 @@ def detect():
             GPIO.output(G,GPIO.LOW)
             GPIO.output(R,GPIO.HIGH)
             u = "检测到火焰！"
-            if rooms is not None:
-                username = rooms[0]['UserName']
-                itchat.send(str(u),toUserName=username)
         if GPIO.input(FIRE) == GPIO.LOW:
             GPIO.output(R,GPIO.LOW)
             GPIO.output(G,GPIO.HIGH)
@@ -116,5 +94,4 @@ def video_feed():
 
 
 if __name__ == '__main__':
-    itchat.run()
     app.run(host='0.0.0.0', port =8080, debug=True, threaded=True)
