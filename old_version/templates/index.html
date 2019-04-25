@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="refresh" content="1">
+<title>远程监控中心</title>
+
+<link rel="stylesheet" href='../static/style.css'>
+
+</head>
+
+<body>
+
+<div class="page">
+  <div class="page__demo">
+    <div class="main-container page__container">
+      <article class="card">
+        <header class="card__header">
+          <img class="card__preview" src="../static/bg.jpg">
+          <h3 class="card__title">温湿度数据</h3>
+        </header>
+        <div class="card__body">
+          <div class="card__content">
+            <p><center>
+			<p>
+				<span style="color:#E53333;">温度</span>：{{ temp }} ℃
+			</p>
+			<p>
+				<span style="color:#337FE5;">湿度</span>：{{ hum }} %
+			</p>
+			<p>
+				<span style="color:#009688;">烟雾及火焰状态</span>：{{ u }} 
+			</p>
+			<p>
+				<a href = "/" >刷新</a>
+			</p>
+			</center></p>
+          </div>
+          <footer class="card__footer">
+            <a href="/camera" class="card__link card__readmore">实时监控</a>
+            <div class="card__meta">
+			  上次检测时间：{{ time }}
+            </div>
+          </footer>
+        </div>
+      </article>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
