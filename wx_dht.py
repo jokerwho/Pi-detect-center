@@ -5,7 +5,7 @@ import RPi.GPIO as GPIO
 import itchat
 
 """set itchat to login in wechat"""
-itchat.auto_login('''hotReload=True''')
+itchat.auto_login(hotReload=True)
 rooms = itchat.get_chatrooms(update=True)
 rooms = itchat.search_chatrooms(name='itchat_test')
 if rooms is not None:
