@@ -7,12 +7,13 @@
 	<title>智能小车控制中心</title>
 	<link rel="stylesheet" type="text/css" href="../static/css/default.css">
 	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,700">
-  	<link rel="stylesheet" href="../static/css/style.min.css">
+		<link rel="stylesheet" href="../static/css/style.min.css">
+	<script type="text/javascript" src="../static/jquery-1.11.2.min.js"> </script>
 </head>
 <body>
 	<div id="wrapper" class="wrapper">
 	  <header class="header htmleaf-header">
-			<h1>实时监控 <span>监控摄像头及识别到的人脸信息</span></h1>
+			<h1>小车控制 <span>手动控制小车前进后退</span></h1>
 			<div class="htmleaf-links">
 				<a class="htmleaf-icon icon-htmleaf-home-outline" href="/" title="返回首页"><span> 返回首页</span></a>
 				<a class="htmleaf-icon icon-htmleaf-arrow-forward-outline" href="#" onClick="javascript :history.back(-1);" title="返回上一页"><span> 返回上一页</span></a>
@@ -22,12 +23,7 @@
 	    <div class="container">
 	      <section>
 			<center>
-			<h3>
-				平移角度: <a href="/pan/-"class="button"> - </a> [ {{ panServoAngle }} ] <a href="/pan/+"class="button"> + </a>
-				<br>
-				倾斜角度: <a href="/tilt/-"class="button"> - </a> [ {{ tiltServoAngle }} ] <a href="/tilt/+"class="button"> + </a>
-			</h3>
-			  <img src="{{ url_for('video_feed') }}" width="100%">
+				{% block body %}{% endblock %}
 			</center>
 	      </section>
 	    </div>
@@ -51,12 +47,12 @@
 	      </a>
 	    </li>
 	    <li class="mm-menu__item">
-	      <a class="mm-menu__link" href="#">
+	      <a class="mm-menu__link" href="/camera">
 	        <span class="mm-menu__link-text"><i class="md md-photo-camera"></i> 实时监控</span>
 	      </a>
 	    </li>
 	    <li class="mm-menu__item">
-	      <a class="mm-menu__link" href="/car">
+	      <a class="mm-menu__link" href="#">
 	        <span class="mm-menu__link-text"><i class="md md-directions-car"></i> 小车控制</span>
 	      </a>
 	    </li>
@@ -64,8 +60,13 @@
 	</nav><!-- /nav -->
 	
 	<script src="../static/js/production/materialMenu.min.js"></script>
+	<script type="text/javascript" src="../static/car.common.js"> </script>
+	<script type="text/javascript" src="../static/car.js"> </script>
 	<script>
 	  var menu = new Menu;
+		$(document).ready(function(){
+				WH.Init();
+			});
 	</script>
 </body>
 </html>
