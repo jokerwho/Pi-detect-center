@@ -1,31 +1,28 @@
 # encoding: utf-8
-from flask import Flask, render_template, Response
-app = Flask(__name__)
-
+import os
+from time import sleep
+from flask import Flask, render_template, request, Response
+import Adafruit_DHT
+import RPi.GPIO as GPIO
 from camera_pi import Camera
 
-import Adafruit_DHT
-import time
-import RPi.GPIO as GPIO
+app = Flask(__name__)
 
-"""set GPIO"""
 GPIO.setmode(GPIO.BCM)
 R,G,Y = 26,19,13
 FIRE = 23
 SMOKE = 21
 
-"""get hum and temp"""
 def getDHTdata():       
-    DHT11Sensor = Adafruit_DHT.DHT11
+    DHT22Sensor = Adafruit_DHT.DHT22
     DHTpin = 6
-    hum, temp = Adafruit_DHT.read_retry(DHT11Sensor, DHTpin)
+    hum, temp = Adafruit_DHT.read_retry(DHT22Sensor, DHTpin)
     
     if hum is not None and temp is not None:
         hum = round(hum)
         temp = round(temp, 1)
     return temp, hum
-        
-"""get gas and fire,send warning to wechat"""
+
 def detect():
     GPIO.setup(SMOKE,GPIO.IN)
     GPIO.setup(FIRE,GPIO.IN)
@@ -37,10 +34,10 @@ def detect():
     if GPIO.input(SMOKE) == GPIO.LOW:
         GPIO.output(G,GPIO.LOW)
         GPIO.output(Y,GPIO.HIGH)
-        u = "检测到有害气体！"
+        u = "GAS!"
         if GPIO.input(FIRE) == GPIO.HIGH:
             GPIO.output(R,GPIO.HIGH)
-            u = "检测到有害气体和火焰！"
+            u = "GAS AND FIRE!!"
         if GPIO.input(FIRE) == GPIO.LOW:
             GPIO.output(R,GPIO.LOW)
             
@@ -49,49 +46,86 @@ def detect():
         if GPIO.input(FIRE) == GPIO.HIGH:
             GPIO.output(G,GPIO.LOW)
             GPIO.output(R,GPIO.HIGH)
-            u = "检测到火焰！"
+            u = "FIRE!"
         if GPIO.input(FIRE) == GPIO.LOW:
             GPIO.output(R,GPIO.LOW)
             GPIO.output(G,GPIO.HIGH)
-            u = "无异常~"
+            u = "OK~"
     return u
-
-"""listen the user accesses the website,return these msg to index.html"""
 @app.route("/")
 def index():
-    timeNow = time.asctime( time.localtime(time.time()) )
+    return render_template('index.html')
+
+@app.route("/detect")
+def dht():
+    #timeNow = time.asctime( time.localtime(time.time()) )
     temp, hum = getDHTdata()
     u = detect()
     templateData = {
-      'time': timeNow,
+      #'time': timeNow,
       'temp': temp,
       'hum' : hum,
       'u' : u
     }
-    return render_template('index.html', **templateData)
+    return render_template('detect.html', **templateData)
 
-"""video streaming home page."""
+global panServoAngle
+global tiltServoAngle
+panServoAngle = 90
+tiltServoAngle = 0
+
+panPin = 5
+#tiltPin = 17
+
 @app.route('/camera')
-def cam():
-    timeNow = time.asctime( time.localtime(time.time()) )
+def camera():
+    """Video streaming home page."""
+ 
     templateData = {
-      'time': timeNow
-    }
+      'panServoAngle'	: panServoAngle,
+      'tiltServoAngle'	: tiltServoAngle
+	}
     return render_template('camera.html', **templateData)
 
-"""video streaming generator function."""
+
 def gen(camera):
+    """Video streaming generator function."""
     while True:
         frame = camera.get_frame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-"""make video to img tag"""
+
 @app.route('/video_feed')
 def video_feed():
+    """Video streaming route. Put this in the src attribute of an img tag."""
     return Response(gen(Camera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
+@app.route("/<servo>/<angle>")
+def move(servo, angle):
+	global panServoAngle
+	global tiltServoAngle
+	if servo == 'pan':
+		if angle == '+':
+			panServoAngle = panServoAngle + 30
+		else:
+			panServoAngle = panServoAngle - 30
+		os.system("python3 angleServoCtrl.py " + str(panPin) + " " + str(panServoAngle))
+	if servo == 'tilt':
+		if angle == '+':
+			tiltServoAngle = tiltServoAngle + 30
+		else:
+			tiltServoAngle = tiltServoAngle - 30
+		os.system("python3 angleServoCtrl.py " + str(tiltPin) + " " + str(tiltServoAngle))
+	
+	templateData = {
+      'panServoAngle'	: panServoAngle,
+      'tiltServoAngle'	: tiltServoAngle
+	}
+	return render_template('camera.html', **templateData)
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port =8080, debug=True, threaded=True)
+    app.run(host='0.0.0.0', port = 8080, debug=True, threaded=True)
